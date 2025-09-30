@@ -9,7 +9,7 @@ export const createCourse = catchAsyncErrors(async function (
   next: NextFunction
 ) {
   try {
-    const course = courseModel.create(data);
+    const course = await courseModel.create(data);
     res.status(201).json({ success: true, course });
   } catch (error: any) {
     next(new ErrorHandler(error.message, 400));
