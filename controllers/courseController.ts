@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import path from "path";
 import ejs from "ejs";
 import sendMail from "../utils/nodemailer";
+import notificationModel from "../models/notificationModel";
 
 export const uploadCourse = catchAsyncErrors(async function (
   req: Request,
@@ -170,6 +171,11 @@ export const addQuestion = catchAsyncErrors(async function (
     };
     // add this question to our Course Content
     courseContent.questions.push(newQuestion);
+    await notificationModel.create({
+      user: req.user?._id,
+      title: "New Question Received",
+      message: `You have a new question in ${courseContent?.title}.`,
+    });
     // save the updated course
     await course?.save();
     res.status(200).json({ success: true, course });
@@ -219,7 +225,11 @@ export const addReply = catchAsyncErrors(async function (
     await course?.save();
 
     if (req.user?._id === question.user._id) {
-      // res.send("REACHED!");
+      await notificationModel.create({
+        user: req.user?._id,
+        title: "New Question Reply Received",
+        message: `You have a new question reply in ${course?.name}.`,
+      });
     } else {
       const data = {
         name: question.user.name,

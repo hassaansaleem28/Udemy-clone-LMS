@@ -7,6 +7,7 @@ import { ErrorMiddleware } from "./middleware/error";
 import userRouter from "./routes/userRoutes";
 import courseRouter from "./routes/courseRoutes";
 import orderRouter from "./routes/orderRoutes";
+import notificationRouter from "./routes/notificationRoutes";
 
 const app = express();
 
@@ -19,6 +20,7 @@ connectDB();
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/course", courseRouter);
 app.use("/api/v1/order", orderRouter);
+app.use("/api/v1/notifications", notificationRouter);
 
 app.get("/test", (req: express.Request, res: express.Response) => {
   res.status(200).json({ success: true, message: "Server is Live!" });

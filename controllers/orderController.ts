@@ -26,22 +26,18 @@ export const createOrder = catchAsyncErrors(async function (
       return next(
         new ErrorHandler("You have already purchased this course!", 400)
       );
-    const course = (await courseModel.findById(courseId)) as {
-      _id: string;
-      name: string;
-      price: number;
-    };
+    const course = await courseModel.findById(courseId);
     if (!course) return next(new ErrorHandler("Course not found!", 404));
 
     const data: any = {
       courseId: course._id,
       userId: user?._id,
+      payment_info,
     };
 
-    newOrder(data, res, next);
     const mailData = {
       order: {
-        _id: (course._id as string).slice(0, 6),
+        _id: String(course._id).slice(0, 6),
         name: course.name,
         price: course.price,
         date: new Date().toLocaleDateString("en-US", {
@@ -66,7 +62,7 @@ export const createOrder = catchAsyncErrors(async function (
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
-    user?.courses.push({ courseId: course?._id });
+    user?.courses.push(course?.id);
     await user?.save();
 
     await notificationModel.create({
@@ -74,8 +70,9 @@ export const createOrder = catchAsyncErrors(async function (
       title: "New Order",
       message: `You have a new Order from ${course?.name}`,
     });
-
-    res.status(201).json({ success: true, order: course });
+    course.purchased = (course.purchased ?? 0) + 1;
+    await course.save();
+    newOrder(data, res, next);
   } catch (error: any) {
     return next(new ErrorHandler(error.message, 400));
   }
