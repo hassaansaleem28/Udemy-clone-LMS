@@ -8,6 +8,8 @@ import userRouter from "./routes/userRoutes";
 import courseRouter from "./routes/courseRoutes";
 import orderRouter from "./routes/orderRoutes";
 import notificationRouter from "./routes/notificationRoutes";
+import analyticsRouter from "./routes/analyticRoutes";
+import layoutRouter from "./routes/layoutRoutes";
 
 const app = express();
 
@@ -21,6 +23,8 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/course", courseRouter);
 app.use("/api/v1/order", orderRouter);
 app.use("/api/v1/notifications", notificationRouter);
+app.use("/api/v1/analytics", analyticsRouter);
+app.use("/api/v1/layout", layoutRouter);
 
 app.get("/test", (req: express.Request, res: express.Response) => {
   res.status(200).json({ success: true, message: "Server is Live!" });
